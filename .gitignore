@@ -1,3 +1,6 @@
+data/*
+*cmake-build-debug*
+
 *.bak
 .gitattributes
 .last_checked
