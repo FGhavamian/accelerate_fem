@@ -30,7 +30,6 @@
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/precondition.h>
 #include <deal.II/lac/affine_constraints.h>
-#include <deal.II/lac/sparse_direct.h>
 
 #include <fstream>
 #include <iostream>
@@ -147,7 +146,7 @@ private:
 
 MaterialModel::MaterialModel(std::map<std::string, double> config)
 {
-    e = config["e"];
+    e = 1000.0;
     nu = 0.0;
     n = 1.0;
     a = -1.0;
@@ -820,14 +819,25 @@ void parse_arg(
 
 int main(int argc, char* argv[])
 {
-
-    std::map<int, std::map<std::string, double>> material_config;
-    parse_arg(argc, argv, material_config);
+    (void) argc;
 
     std::map<std::string, std::string> path_config;
+    std::map<std::string, double> material_config_1;
+    std::map<std::string, double> material_config_2;
+    std::map<int, std::map<std::string, double>> material_config;
+
     path_config["msh"] = argv[1];
     path_config["output_solution"] = argv[2];
     path_config["output_plastic_strain"] = argv[3];
+
+    material_config_1["b"] = std::stod(argv[4]);
+    material_config_1["y"] = std::stod(argv[5]);
+
+    material_config_2["b"] = std::stod(argv[6]);
+    material_config_2["y"] = std::stod(argv[7]);
+
+    material_config[1] = material_config_1;
+    material_config[2] = material_config_2;
 
     Model model(material_config, path_config);
     model.run();
