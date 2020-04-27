@@ -3,11 +3,18 @@
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
-         "make_msh": "01_meshed_geometry.ipynb"}
+         "make_msh": "01_meshed_geometry.ipynb",
+         "VTUContent": "02_preprocess.ipynb",
+         "read_vtu_files": "02_preprocess.ipynb",
+         "make_grid": "02_preprocess.ipynb",
+         "compute_tri3_shape_function_at": "02_preprocess.ipynb",
+         "find_grids_in_each_element": "02_preprocess.ipynb",
+         "interpolate": "02_preprocess.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
-           "geometry/rasterized_geometry.py"]
+           "geometry/rasterized_geometry.py",
+           "preprocess/interpolate_target.py"]
 
 doc_url = "https://fghavamian.github.io/accelerate_simulations/"
 
