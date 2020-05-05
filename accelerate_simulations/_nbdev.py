@@ -9,12 +9,16 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "make_grid": "02_preprocess.ipynb",
          "compute_tri3_shape_function_at": "02_preprocess.ipynb",
          "find_grids_in_each_element": "02_preprocess.ipynb",
-         "interpolate": "02_preprocess.ipynb"}
+         "interpolate": "02_preprocess.ipynb",
+         "GeometryRasterizer": "01_rasterized_geometry.ipynb",
+         "MaterialFieldMaker": "02_input_fields.ipynb",
+         "GeometricFieldMaker": "02_input_fields.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
            "geometry/rasterized_geometry.py",
-           "preprocess/interpolate_target.py"]
+           "preprocess/interpolate_target.py",
+           "preprocess/input_fields.py"]
 
 doc_url = "https://fghavamian.github.io/accelerate_simulations/"
 
