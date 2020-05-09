@@ -92,9 +92,6 @@ def make_target_fields(paths_examples):
     target_fields = np.stack(target_fields, axis=0)
     target_fields = np.expand_dims(target_fields, axis=-1)
 
-    field_grid = np.squeeze(target_fields)
-    levels = np.linspace(field_grid.min(), field_grid.max())
-
     return target_fields
 
 
