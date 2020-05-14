@@ -36,7 +36,8 @@ def make_geometric_fields(geometry_rasterizer):
 
     make_geometric_fields = prep.GeometricFieldMaker(
         geometry_rasterizer,
-        names_boundary)
+        names_boundary,
+        scaling_factor=1)
 
     return make_geometric_fields()
 
@@ -82,7 +83,7 @@ def make_target_fields(paths_examples):
     target_fields = []
     for path_example in paths_examples:
         path_vtu = os.path.join(
-            path_example, field_name, f'{field_name}_400.vtu')
+            path_example, field_name, f'{field_name}_50.vtu')
 
         data_nodal = prep.read_vtu_file(path_vtu, field_name)
 
@@ -112,9 +113,11 @@ if __name__ == "__main__":
 
     print('[INFO] making input fields ...')
     input_fields = make_input_fields(paths_examples)
+    print('[INFO] input_fields shape:', input_fields.shape)
 
     print('[INFO] making target fields ...')
     target_fields = make_target_fields(paths_examples)
+    print('[INFO] input_fields shape:', target_fields.shape)
 
     print('[INFO] saving fields ...')
     paths_processed = args['path_data'].replace('raw', 'processed')
