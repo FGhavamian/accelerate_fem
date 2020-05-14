@@ -314,7 +314,8 @@ class Model
 {
 public:
     Model ( std::map<int, std::map<std::string, double>> material_config_,
-            std::map<std::string, std::string> path_config_);
+            std::map<std::string, std::string> path_config_,
+            int n_timestep_);
     void run ();
 
 private:
@@ -348,13 +349,14 @@ private:
 };
 
 Model::Model(std::map<int, std::map<std::string, double>> material_config_,
-             std::map<std::string, std::string> path_config_):
+             std::map<std::string, std::string> path_config_,
+             int n_timestep_):
     fe(FE_Q<2>(1), 2),
     dof_handler(triangulation),
     quadrature_formula(fe.degree + 1),
-    timestep_no(0),
-    n_timestep(400)
+    timestep_no(0)
 {
+    n_timestep = n_timestep_;
     path_config = path_config_;
 
     material_models[1] = new MaterialModel(material_config_[1]);
@@ -590,7 +592,12 @@ void Model::do_timestep()
     while (timestep_no < n_timestep)
     {
         ++timestep_no;
-        std::cout << "Timestep: " << timestep_no << std::endl;
+        std::cout 
+            << "Timestep: " 
+            << timestep_no
+            << " out of " 
+            << n_timestep
+            << std::endl;
 
         bool converged = solve_newton();
 
@@ -836,10 +843,12 @@ int main(int argc, char* argv[])
     material_config_2["b"] = std::stod(argv[6]);
     material_config_2["y"] = std::stod(argv[7]);
 
+    int n_timestep = std::stoi(argv[8]);
+
     material_config[1] = material_config_1;
     material_config[2] = material_config_2;
 
-    Model model(material_config, path_config);
+    Model model(material_config, path_config, n_timestep);
     model.run();
 }
 
