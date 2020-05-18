@@ -13,7 +13,7 @@ y_1 = [10.0]
 b_2 = [100.0]
 y_2 = [1.0]
 
-circle_location_seed_list = range(13, 30)
+circle_location_seed_list = range(26, 30)
 n_circles_list = [5]
 circle_radius_list = [5.0]
 box_size_list = [(100, 100)]

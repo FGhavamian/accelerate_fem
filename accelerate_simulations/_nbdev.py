@@ -12,13 +12,18 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "make_grid": "02_interpolate_target.ipynb",
          "compute_tri3_shape_function_at": "02_interpolate_target.ipynb",
          "find_grids_in_each_element": "02_interpolate_target.ipynb",
-         "interpolate": "02_interpolate_target.ipynb"}
+         "interpolate": "02_interpolate_target.ipynb",
+         "GoogleNetLayer": "03_train.ipynb",
+         "GoogleNetTransposedLayer": "03_train.ipynb",
+         "UnetModel": "03_train.ipynb",
+         "plot_example": "03_train.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
            "geometry/rasterized_geometry.py",
            "preprocess/input_fields.py",
-           "preprocess/interpolate_target.py"]
+           "preprocess/interpolate_target.py",
+           "train/model.py"]
 
 doc_url = "https://fghavamian.github.io/accelerate_simulations/"
 
