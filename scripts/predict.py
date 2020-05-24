@@ -5,9 +5,11 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from accelerate_simulations.train.model import UnetModel
 import accelerate_simulations.geometry as geom
 import accelerate_simulations.preprocess as prep
+from accelerate_simulations.train.model import UnetModel
+
+from sys import platform
 
 
 kernel_sizes = [(3, 3), (5, 5), (7, 7)]
@@ -60,8 +62,10 @@ def make_input_fields(circle_location_seed_list):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path-model', dest='path_model')
-    parser.add_argument('--circle-loc-seeds', dest='circle_loc_seeds')
+    parser.add_argument('--path-model', dest='path_model',
+                        default='models/model')
+    parser.add_argument('--circle-loc-seeds', dest='circle_loc_seeds',
+                        help='separate integer seeds with comma')
     args = vars(parser.parse_args())
 
     circle_location_seed_list = [
@@ -78,12 +82,19 @@ if __name__ == "__main__":
     pred = model.predict(input_fields)
     t3 = time.time()
 
-    os.system('clear')
-    print(f'data prepration time: {(t1-t0)/len(input_fields)}')
-    print(f'prediction time: {(t3-t2)/len(pred)}')
+    if platform == 'linux':
+        os.system('clear')
+    else:
+        os.system('cls')
+
+    print('Average of one example:')
+    print(f'preprocessing: {(t1-t0)/len(input_fields):.3f} seconds')
+    print(f'prediction:    {(t3-t2)/len(pred):.3f} seconds')
+    print(f'total:         {(t3-t2+t1-t0)/len(pred):.3f} seconds')
 
     for idx in range(len(circle_location_seed_list)):
         plt.figure()
         plt.imshow(np.squeeze(pred[idx]))
         plt.colorbar()
         plt.savefig(f'outputs/seed_{circle_location_seed_list[idx]}.png')
+        plt.close()
