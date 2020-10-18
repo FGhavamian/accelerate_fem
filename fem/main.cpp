@@ -176,12 +176,6 @@ void MaterialModel::update(
     double stress_von_mises = compute_von_mises_stress(stress);
     double yield_func_val = compute_yeild_func_val(stress_von_mises, yield_stress_new);
 
-//    std::cout << "yield_func_val " <<  yield_func_val << std::endl;
-//    std::cout << "strain_plastic_cum_old " <<  strain_plastic_cum_old << std::endl;
-//    std::cout << "strain_delta " <<  strain_delta << std::endl;
-//    std::cout << std::endl;
-
-    // yield_func_val = -1;
     if (yield_func_val > 0)
     {
         int counter = 0;
@@ -236,11 +230,6 @@ void MaterialModel::update(
             }
         }
     }
-
-//    std::cout << "stress_old " <<  stress_old << std::endl;
-//    std::cout << "stress_new " <<  stress_new << std::endl;
-//    std::cout << "strain_delta " <<  strain_delta << std::endl;
-//    std::cout << std::endl;
 
     history->set_stress(stress);
     history->set_strain_plastic_cum(strain_plastic_new);
@@ -419,16 +408,12 @@ void Model::assemble_system()
 
         for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
         {
-//            std::cout << q_point << std::endl;
             std::shared_ptr<PointHistory> history = history_vec[q_point];
             SymmetricTensor<2, 2> strain_delta = strain_increment_tensor[q_point];
 
             SymmetricTensor<2, 2> stress;
             SymmetricTensor<4, 2> stiffness;
             material_model->update(strain_delta, history, stress, stiffness);
-
-//            std::cout << strain_delta << std::endl;
-//            std::cout << history->get_strain_plastic_cum() << std::endl;
 
             for (unsigned int i = 0; i < dofs_per_cell; ++i) {
                 SymmetricTensor<2, 2> b_tensor_i = fe_values[displacement].symmetric_gradient(i, q_point);
@@ -441,8 +426,6 @@ void Model::assemble_system()
                 }
             }
         }
-
-//        std::cout << std::endl;
 
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
         {
@@ -500,51 +483,12 @@ void Model::apply_boundary(bool is_first_iteration)
             tmp_displacement,
             system_rhs);
 
-//    std::cout << "boundary ids" << std::endl;
-//    for (auto &cell : dof_handler.active_cell_iterators())
-//    {
-//        std::cout << "cell id" << cell->id() << std::endl;
-//        for (int i=0; i<4; i++)
-//        {
-//            std::cout << cell->face(i)->boundary_id() << std::endl;
-//        }
-//    }
-
-//    FEValuesExtractors::Scalar x_component(0);
-//    std::map<types::global_dof_index, double> boundary_values;
-//
-//    VectorTools::interpolate_boundary_values(
-//            dof_handler,
-//            6,
-//            Functions::ZeroFunction<2>(2),
-//            boundary_values,
-//            fe.component_mask(x_component));
-//
-//    if (is_first_iteration)
-//        VectorTools::interpolate_boundary_values(
-//                dof_handler,
-//                4,
-//                Functions::ConstantFunction<2>(0.01, 2),
-//                boundary_values,
-//                fe.component_mask(x_component));
-//    else
-//        VectorTools::interpolate_boundary_values(
-//                dof_handler,
-//                4,
-//                Functions::ZeroFunction<2>(2),
-//                boundary_values,
-//                fe.component_mask(x_component));
-
     MatrixTools::apply_boundary_values(
             boundary_values,
             system_matrix,
             tmp_displacement,
             system_rhs);
 
-
-//    std::cout << std::endl;
-//    for (const auto &[k, v] : boundary_values)
-//        std::cout << k << " " << v << std::endl;
 }
 
 bool Model::solve_newton()
@@ -772,58 +716,6 @@ void Model::run()
 }
 
 
-void tokenize(std::string const &str, const char delim, std::vector<std::string> &out)
-{
-    // construct a stream from the string
-    std::stringstream ss(str);
-
-    std::string s;
-    while (std::getline(ss, s, delim)) {
-        out.push_back(s);
-    }
-}
-
-void parse_arg(
-        int argc, char *argv[],
-        std::map<int, std::map<std::string, double>> &config)
-{
-    std::vector<int> material_ids = {1, 2};
-    std::vector<std::string> material_param_names = {"e", "b", "y"};
-
-    for (int material_id : material_ids)
-    {
-        std::map<std::string, double> config_mat;
-        for (const std::string& material_param_name : material_param_names)
-        {
-            for (int i=1; i<argc; i++)
-            {
-                if (std::string(argv[i]).find("_" + std::to_string(material_id)) != std::string::npos)
-                    if (std::string(argv[i]).find(material_param_name) != std::string::npos)
-                    {
-                        std::vector<std::string> out;
-                        tokenize(argv[i], '=', out);
-                        config_mat.insert(std::make_pair(material_param_name, std::stod(out[1])));
-                    }
-            }
-        }
-
-        config.insert(std::make_pair(material_id, config_mat));
-    }
-
-    std::cout << "Material config:" << std::endl;
-    for (const auto &pair : config)
-    {
-        for (const auto &pair_mat : pair.second)
-        {
-            std::cout
-                << "material_id: " << pair.first
-                << ", " << pair_mat.first
-                << " : " << pair_mat.second << std::endl;
-        }
-    }
-}
-
-
 int main(int argc, char* argv[])
 {
     (void) argc;
@@ -853,52 +745,3 @@ int main(int argc, char* argv[])
 }
 
 
-
-
-//======================================================
-//      Incremental boundary value
-//======================================================
-//class IncrementalBoundaryValues: public Function<2>
-//{
-//public:
-//    IncrementalBoundaryValues (double present_time,
-//                               double end_time);
-//    virtual
-//    void
-//    vector_value (const Point<2> &p,
-//                  Vector<double>   &values) const;
-//    virtual
-//    void
-//    vector_value_list (const std::vector<Point<2> > &points,
-//                       std::vector<Vector<double> >   &value_list) const;
-//
-//private:
-//    const double present_time;
-//    const double end_time;
-//    const double imposed_displacement;
-//};
-//
-//IncrementalBoundaryValues::IncrementalBoundaryValues (
-//    const double present_time,
-//    const double end_time):
-//        Function<2> (2),
-//        present_time (present_time),
-//        end_time (end_time),
-//        imposed_displacement (0.001)
-//{}
-//
-//void IncrementalBoundaryValues::vector_value (
-//    const Point<2> &p,
-//    Vector<double> &values) const
-//{
-//    AssertThrow (values.size() == 2,
-//                 ExcDimensionMismatch (values.size(), 2));
-//
-//    values = 0.;
-//    values(0) = imposed_displacement;
-//}
-//
-//void IncrementalBoundaryValues::vector_value_list(const std::vector<Point<2> > &points,
-//                                                  std::vector<Vector<double> > &value_list) const {
-//    Function::vector_value_list(points, value_list);
-//}

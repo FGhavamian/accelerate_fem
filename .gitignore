@@ -1,5 +1,7 @@
-models/*
-outputs/*
+.vscode
+.github/*
+ml/models/*
+ml/outputs/*
 data/*
 *cmake-build-debug*
 
