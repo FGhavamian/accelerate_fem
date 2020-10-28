@@ -16,7 +16,8 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "GoogleNetLayer": "03_train.ipynb",
          "GoogleNetTransposedLayer": "03_train.ipynb",
          "UnetModel": "03_train.ipynb",
-         "plot_example": "03_train.ipynb"}
+         "plot_example": "03_train.ipynb",
+         "add_physical": "01_meshed_geometry.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
