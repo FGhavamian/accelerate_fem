@@ -1,0 +1,55 @@
+import os
+
+from accelerate_simulations.geometry import AbstractGeometry, make_msh
+import config
+
+
+def make_directories_for(case_name):
+    path_case_dir = os.path.join(config.path_data_dir, case_name)
+
+    if os.path.exists(path_case_dir): 
+        raise Exception(f'{path_case_dir} exists, remove it manually')
+
+    paths = {
+        'mesh': os.path.join(path_case_dir, 'mesh.msh'),
+        'mesh_hex': os.path.join(path_case_dir, 'mesh_hex.msh'), 
+        'abstract_geometry': os.path.join(path_case_dir, 'abstract_geometry.pickle'), 
+        'solution_dir': os.path.join(path_case_dir, 'solution/'), 
+        'plastic_strain_dir': os.path.join(path_case_dir, 'plastic_strain/')
+    }
+
+    os.makedirs(path_case_dir)
+    os.makedirs(paths['solution_dir'])
+    os.makedirs(paths['plastic_strain_dir'])
+
+    return paths
+
+
+for i, circle_location_seed in enumerate(config.circle_location_seed_list):
+    case_name = str(circle_location_seed)
+
+    paths = make_directories_for(case_name)
+
+    abstract_geometry = AbstractGeometry(
+        config.n_circles_list[0],
+        config.circle_radius_list[0],
+        config.box_size_list[0],
+        circle_location_seed)
+
+    abstract_geometry.save_at(paths['abstract_geometry'])
+
+    make_msh(
+        paths['mesh'], 
+        abstract_geometry, 
+        cl_coarse=config.cl_coarse, cl_fine=config.cl_fine, 
+        verbose=False,
+        path_to_tethex=config.path_to_tethex)
+
+    fem_args = [
+        paths['mesh_hex'], paths['solution_dir'], paths['plastic_strain_dir'],
+        str(config.b_1[0]), str(config.y_1[0]), str(config.b_2[0]), str(config.y_2[0]), str(config.n_timesteps)
+    ]
+    
+    fem_args = ' '.join(fem_args)
+    command = f'{config.path_fem} {fem_args}'
+    os.system(command)
