@@ -4,7 +4,8 @@ ml/models/*
 ml/outputs/*
 **data/*
 fem/build/*
-*cmake-build-debug*
+examples/*/data/*
+**cmake-build-debug*
 
 *.bak
 .gitattributes
