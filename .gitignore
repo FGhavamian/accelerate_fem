@@ -2,7 +2,8 @@
 .github/*
 ml/models/*
 ml/outputs/*
-data/*
+**data/*
+fem/build/*
 *cmake-build-debug*
 
 *.bak

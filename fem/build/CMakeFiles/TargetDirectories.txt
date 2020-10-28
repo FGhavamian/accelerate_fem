@@ -1,3 +1,0 @@
-/home/fghavamian/projects/accelerate_computer_simulations/fem/build/CMakeFiles/rebuild_cache.dir
-/home/fghavamian/projects/accelerate_computer_simulations/fem/build/CMakeFiles/fem.dir
-/home/fghavamian/projects/accelerate_computer_simulations/fem/build/CMakeFiles/edit_cache.dir

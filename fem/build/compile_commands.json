@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/fghavamian/projects/accelerate_computer_simulations/fem/build",
-  "command": "/usr/bin/c++  -DBOOST_NO_AUTO_PTR -DDEBUG -DTBB_DO_ASSERT=1 -DTBB_USE_DEBUG -isystem /usr/local/include/deal.II/bundled    -pedantic -fPIC -Wall -Wextra -Woverloaded-virtual -Wpointer-arith -Wsign-compare -Wswitch -Wsynth -Wwrite-strings -Wno-placement-new -Wno-literal-suffix -Wno-psabi -fopenmp-simd -std=c++17 -Wno-parentheses -Wno-unused-local-typedefs -O0 -ggdb -Wa,--compress-debug-sections -o CMakeFiles/fem.dir/main.cpp.o -c /home/fghavamian/projects/accelerate_computer_simulations/fem/main.cpp",
-  "file": "/home/fghavamian/projects/accelerate_computer_simulations/fem/main.cpp"
-}
-]

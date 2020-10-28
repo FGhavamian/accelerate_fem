@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic  -rdynamic -fuse-ld=gold -pthread -ggdb CMakeFiles/fem.dir/main.cpp.o  -o fem -Wl,-rpath,/usr/local/lib /usr/local/lib/libdeal_II.g.so.9.2.0 -ldl -lz -lrt 
