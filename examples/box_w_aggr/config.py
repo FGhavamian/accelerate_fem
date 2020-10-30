@@ -15,7 +15,7 @@ n_circles_list = [5]
 circle_radius_list = [5.0]
 box_size_list = [(100, 100)]
 
-path_data_dir = os.path.join(os.getcwd(), 'data', 'raw')
+path_data_dir = os.path.join('data', 'raw')
 
 path_to_tethex = "~/dev/tethex/build/tethex"
 

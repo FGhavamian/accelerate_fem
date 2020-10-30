@@ -453,29 +453,29 @@ void Model::apply_boundary(bool is_first_iteration)
             3,
             Functions::ZeroFunction<2>(2),
             boundary_values,
-            fe.component_mask(x_component));
+            fe.component_mask(y_component));
 
     VectorTools::interpolate_boundary_values(
             dof_handler,
             4,
             Functions::ZeroFunction<2>(2),
             boundary_values,
-            fe.component_mask(y_component));
+            fe.component_mask(x_component));
 
     if (is_first_iteration)
         VectorTools::interpolate_boundary_values(
                 dof_handler,
                 6,
-                Functions::ConstantFunction<2>(-0.005, 2),
+                Functions::ConstantFunction<2>(0.005, 2),
                 boundary_values,
-                fe.component_mask(y_component));
+                fe.component_mask(x_component));
     else
         VectorTools::interpolate_boundary_values(
                 dof_handler,
                 6,
                 Functions::ZeroFunction<2>(2),
                 boundary_values,
-                fe.component_mask(y_component));
+                fe.component_mask(x_component));
 
     MatrixTools::apply_boundary_values(
             boundary_values,

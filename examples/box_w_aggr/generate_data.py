@@ -12,7 +12,6 @@ def make_directories_for(case_name):
 
     paths = {
         'mesh': os.path.join(path_case_dir, 'mesh.msh'),
-        'mesh_hex': os.path.join(path_case_dir, 'mesh_hex.msh'), 
         'abstract_geometry': os.path.join(path_case_dir, 'abstract_geometry.pickle'), 
         'solution_dir': os.path.join(path_case_dir, 'solution/'), 
         'plastic_strain_dir': os.path.join(path_case_dir, 'plastic_strain/')
@@ -46,10 +45,14 @@ for i, circle_location_seed in enumerate(config.circle_location_seed_list):
         path_to_tethex=config.path_to_tethex)
 
     fem_args = [
-        paths['mesh_hex'], paths['solution_dir'], paths['plastic_strain_dir'],
+        paths['mesh'], paths['solution_dir'], paths['plastic_strain_dir'],
         str(config.b_1[0]), str(config.y_1[0]), str(config.b_2[0]), str(config.y_2[0]), str(config.n_timesteps)
     ]
     
+    
     fem_args = ' '.join(fem_args)
     command = f'{config.path_fem} {fem_args}'
+
+    print(command)
     os.system(command)
+    break
