@@ -30,9 +30,10 @@ for i, circle_location_seed in enumerate(config.circle_location_seed_list):
     paths = make_directories_for(case_name)
 
     abstract_geometry = AbstractGeometry(
-        config.n_circles_list[0],
-        config.circle_radius_list[0],
-        config.box_size_list[0],
+        config.n_circles,
+        config.circle_radius_range,
+        config.box_size,
+        config.gap,
         circle_location_seed)
 
     abstract_geometry.save_at(paths['abstract_geometry'])
@@ -41,12 +42,12 @@ for i, circle_location_seed in enumerate(config.circle_location_seed_list):
         paths['mesh'], 
         abstract_geometry, 
         cl_coarse=config.cl_coarse, cl_fine=config.cl_fine, 
-        verbose=False,
-        path_to_tethex=config.path_to_tethex)
+        verbose=False)
 
     fem_args = [
         paths['mesh'], paths['solution_dir'], paths['plastic_strain_dir'],
-        str(config.b_1[0]), str(config.y_1[0]), str(config.b_2[0]), str(config.y_2[0]), str(config.n_timesteps)
+        str(config.b_1), str(config.y_1), str(config.b_2), str(config.y_2), 
+        str(config.n_timesteps)
     ]
     
     
@@ -55,4 +56,3 @@ for i, circle_location_seed in enumerate(config.circle_location_seed_list):
 
     print(command)
     os.system(command)
-    break
