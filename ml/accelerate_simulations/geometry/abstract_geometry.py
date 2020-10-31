@@ -42,15 +42,15 @@ class AbstractGeometry:
 
     def get_geom_info(self):
         circles = self._generate_random_circles()
-        box = self._get_box()
+        box_coordinates = self._get_box_coordinates()
 
-        return circles, box
+        return circles, box_coordinates
 
-    def _get_box(self):
-        return Polygon([[0, 0],
+    def _get_box_coordinates(self):
+        return [[0, 0],
                 [self.box_size[0], 0],
                 [self.box_size[0], self.box_size[1]],
-                [0, self.box_size[1]]])
+                [0, self.box_size[1]]]
 
     def _generate_random_circles(self):
         np.random.seed(self.seed)
