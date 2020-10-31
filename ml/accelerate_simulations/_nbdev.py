@@ -17,7 +17,12 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "GoogleNetTransposedLayer": "03_train.ipynb",
          "UnetModel": "03_train.ipynb",
          "plot_example": "03_train.ipynb",
-         "add_physical": "01_meshed_geometry.ipynb"}
+         "add_physical": "01_meshed_geometry.ipynb",
+         "generate_random_circle_in_box": "00_abstract_geometry.ipynb",
+         "has_enough_distance_from_circles": "00_abstract_geometry.ipynb",
+         "get_random_circle_radius": "00_abstract_geometry.ipynb",
+         "get_circle_info": "01_meshed_geometry.ipynb",
+         "get_box_corners": "01_meshed_geometry.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
