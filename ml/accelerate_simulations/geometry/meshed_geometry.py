@@ -18,7 +18,7 @@ def get_circle_info(circle):
     return x, y, circle_radius
 
 # Cell
-def get_box_corners(circle):
+def get_box_corners(box):
     return list(box.exterior.coords)
 
 # Cell
