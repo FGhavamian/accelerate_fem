@@ -22,7 +22,8 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "has_enough_distance_from_circles": "00_abstract_geometry.ipynb",
          "get_random_circle_radius": "00_abstract_geometry.ipynb",
          "get_circle_info": "01_meshed_geometry.ipynb",
-         "get_box_corners": "01_meshed_geometry.ipynb"}
+         "get_box_corners": "01_meshed_geometry.ipynb",
+         "element_to_tag": "01_rasterized_geometry.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
