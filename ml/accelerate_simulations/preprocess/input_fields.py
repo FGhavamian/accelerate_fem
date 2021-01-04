@@ -43,7 +43,7 @@ class GeometricFieldMaker:
     def __init__(self, names_boundary, element_to_tag, scaling_factor):
         self.element_to_tag = element_to_tag
         self.scaling_factor = scaling_factor
-        self.names_boundary = self._add_default_boundaries(names_boundary)
+        self.names_boundary = self._add_default_boundaries(names_boundary[:]) # [:] so that names_boundary is not over written
 
     def __call__(self, raster_array):
         raster_image = np.array(raster_array.tags)
@@ -65,7 +65,7 @@ class GeometricFieldMaker:
     @staticmethod
     def _add_default_boundaries(names_boundary):
         names_default_boundary = ['default_left', 'default_bottom', 'default_right', 'default_top']
-        names_boundary += names_default_boundary
+        names_boundary += names_default_boundary[:]
         return names_boundary
 
     def _get_default_grid():

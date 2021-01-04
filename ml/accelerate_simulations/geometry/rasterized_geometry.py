@@ -2,6 +2,9 @@
 
 __all__ = ['element_to_tag', 'GeometryRasterizer']
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 # Cell
 from shapely.geometry import Point, box, Polygon, MultiPoint, MultiPolygon, LineString, MultiLineString
 from geocube.api.core import make_geocube
@@ -24,14 +27,14 @@ class GeometryRasterizer:
 
     def __call__(self, abstract_geometry: AbstractGeometry):
         circles, _ = abstract_geometry.get_geom_info()
-
+        
         x_max, y_max = abstract_geometry.box_size
         grid_size = (x_max/self.resolution[0], y_max/self.resolution[1])
 
         boxx = self._make_box(circles, box_size=abstract_geometry.box_size)
-
+        
         vector_data = self._make_geopandas_dataframe(circles, boxx)
-
+        
         raster_array = make_geocube(
             vector_data=vector_data,
             resolution=grid_size,
@@ -42,12 +45,13 @@ class GeometryRasterizer:
     def _make_geopandas_dataframe(self, circles, boxx):
         tags = list(element_to_tag.values())
         geometries = [circles, boxx, circles.boundary]
-
+        
         g = gpd.GeoDataFrame(
             {"tags": tags},
             geometry=geometries,
-            crs={"init": "epsg:4326"}
+            crs={"init": "EPSG:4326"}
         )
+        
         return g
 
     def _make_box(self, circles, box_size):

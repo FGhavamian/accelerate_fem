@@ -4,9 +4,12 @@ import pickle
 import argparse
 
 import numpy as np
+from tqdm import tqdm
+from joblib import Parallel, delayed
 
 import accelerate_simulations.geometry as geom
 import accelerate_simulations.preprocess as prep
+import config 
 
 
 def read_abstract_geometry(path_example):
@@ -18,107 +21,97 @@ def read_abstract_geometry(path_example):
         return pickle.load(file)
 
 
-def get_paths_examples(path_data):
+def get_paths_examples():
     path_pattern = os.path.join(
-        path_data,
+        config.path_data_raw,
         '*'
     )
     return glob.glob(path_pattern)
 
 
-def make_geometric_fields(geometry_rasterizer):
-    names_boundary = [
-            'boundary_left',
-            'boundary_bot',
-            'boundary_right',
-            'boundary_top',
-            'circle_boundary']
+def make_input_fields(path_example):
+    abstract_geometry = read_abstract_geometry(path_example)
+        
+    rasterize = geom.GeometryRasterizer(resolution=config.resolution)
+    raster_array = rasterize(abstract_geometry)
+    
+    make_material_fields = prep.MaterialFieldMaker(
+        config.material_properties, 
+        geom.element_to_tag)
+
+    material_fields = make_material_fields(raster_array)
 
     make_geometric_fields = prep.GeometricFieldMaker(
-        geometry_rasterizer,
-        names_boundary,
+        config.names_boundary, 
+        geom.element_to_tag, 
         scaling_factor=1)
 
-    return make_geometric_fields()
+    geometric_fields = make_geometric_fields(raster_array)
 
+    input_fields = np.concatenate(
+        [geometric_fields, material_fields],
+        axis=-1)
 
-def make_material_fields(geometry_rasterizer):
-    material_properties = {
-        'y': {'box_wo_holes': 10, 'holes': 1},
-        'b': {'box_wo_holes': 100, 'holes': 100}
-    }
-
-    make_material_fields = prep.MaterialFieldMaker(
-        geometry_rasterizer,
-        material_properties)
-
-    return make_material_fields()
-
-
-def make_input_fields(path_examples):
-    input_fields_list = []
-    for path_example in paths_examples:
-        abstract_geometry = read_abstract_geometry(path_example)
-        geometry_rasterizer = geom.GeometryRasterizer(abstract_geometry)
-        geometry_rasterizer.rasterize()
-
-        geometric_fields = make_geometric_fields(geometry_rasterizer)
-        material_fields = make_material_fields(geometry_rasterizer)
-
-        input_fields = np.concatenate(
-            [geometric_fields, material_fields],
-            axis=-1)
-
-        input_fields_list.append(input_fields)
-
-    input_fields = np.stack(input_fields_list, axis=0) 
     return input_fields
 
 
-def make_target_fields(paths_examples):
-    field_name = 'plastic_strain'
-    box_coords = ((0, 0), (100, 100))
-    grid_x, grid_y, grid_flat = prep.make_grid(box_coords, 1)
-
+def make_target_fields(path_example):
     target_fields = []
-    for path_example in paths_examples:
+    for field_name in config.field_names:
         path_vtu = os.path.join(
-            path_example, field_name, f'{field_name}_50.vtu')
+            path_example, field_name, f'{field_name}_{config.time_step}.vtu')
 
         data_nodal = prep.read_vtu_file(path_vtu, field_name)
 
-        target_field = prep.interpolate(data_nodal, grid_flat, grid_y.shape)
+        target_field = prep.interpolate(data_nodal, config.box_size, config.resolution)
         target_fields.append(target_field)
-
-    target_fields = np.stack(target_fields, axis=0)
-    target_fields = np.expand_dims(target_fields, axis=-1)
-
-    return target_fields
+    
+    return np.concatenate(target_fields, axis=-1)
 
 
-def save(input_fields, target_fields, path_processed):
-    path_input = os.path.join(path_processed, 'input.npy')
-    path_target = os.path.join(path_processed, 'target.npy')
+def save(input_fields, target_fields):
+    if not os.path.exists(config.path_data_processed): 
+        os.mkdir(config.path_data_processed)
+
+    path_input = os.path.join(config.path_data_processed, 'input.npy')
+    path_target = os.path.join(config.path_data_processed, 'target.npy')
 
     np.save(path_input, input_fields)
     np.save(path_target, target_fields)
 
 
+def run_in_parallel(func, paths_examples):
+    par = Parallel(n_jobs=-1, verbose=11)
+    del_func = delayed(func)
+    
+    field_list = par(del_func(paths_example) for paths_example in paths_examples)
+    return np.stack(field_list, axis=0) 
+
+
+def remove_examples_with_unavailable_data(paths_examples):
+    full_path = lambda p: os.path.join(
+        p, 
+        config.field_names[0], 
+        f'{config.field_names[0]}_{config.time_step}.vtu'
+    )
+    return [p for p in paths_examples if os.path.exists(full_path(p))]
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path-data', dest='path_data')
-    args = vars(parser.parse_args())
-
-    paths_examples = get_paths_examples(args['path_data'])
-
+    paths_examples = get_paths_examples()
+    
+    print('[INFO] removing examples with unavailable data ...')
+    print('[INFO] number of examples before:', len(paths_examples))
+    paths_examples = remove_examples_with_unavailable_data(paths_examples)
+    print('[INFO] number of examples before:', len(paths_examples))
+    
     print('[INFO] making input fields ...')
-    input_fields = make_input_fields(paths_examples)
+    input_fields = run_in_parallel(make_input_fields, paths_examples)
     print('[INFO] input_fields shape:', input_fields.shape)
 
     print('[INFO] making target fields ...')
-    target_fields = make_target_fields(paths_examples)
+    target_fields = run_in_parallel(make_target_fields, paths_examples)
     print('[INFO] input_fields shape:', target_fields.shape)
 
     print('[INFO] saving fields ...')
-    paths_processed = args['path_data'].replace('raw', 'processed')
-    save(input_fields, target_fields, paths_processed)
+    save(input_fields, target_fields)
