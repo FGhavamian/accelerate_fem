@@ -2,8 +2,13 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
+index = {"generate_random_circle_in_box": "00_abstract_geometry.ipynb",
+         "has_enough_distance_from_circles": "00_abstract_geometry.ipynb",
+         "get_random_circle_radius": "00_abstract_geometry.ipynb",
+         "AbstractGeometry": "00_abstract_geometry.ipynb",
+         "get_circle_info": "01_meshed_geometry.ipynb",
          "make_msh": "01_meshed_geometry.ipynb",
+         "element_to_tag": "01_rasterized_geometry.ipynb",
          "GeometryRasterizer": "01_rasterized_geometry.ipynb",
          "MaterialFieldMaker": "02_input_fields.ipynb",
          "GeometricFieldMaker": "02_input_fields.ipynb",
@@ -13,17 +18,12 @@ index = {"AbstractGeometry": "00_abstract_geometry.ipynb",
          "compute_tri3_shape_function_at": "02_interpolate_target.ipynb",
          "find_grids_in_each_element": "02_interpolate_target.ipynb",
          "interpolate": "02_interpolate_target.ipynb",
+         "load_data": "03_train.ipynb",
          "GoogleNetLayer": "03_train.ipynb",
          "GoogleNetTransposedLayer": "03_train.ipynb",
          "UnetModel": "03_train.ipynb",
-         "plot_example": "03_train.ipynb",
-         "add_physical": "01_meshed_geometry.ipynb",
-         "generate_random_circle_in_box": "00_abstract_geometry.ipynb",
-         "has_enough_distance_from_circles": "00_abstract_geometry.ipynb",
-         "get_random_circle_radius": "00_abstract_geometry.ipynb",
-         "get_circle_info": "01_meshed_geometry.ipynb",
-         "get_box_corners": "01_meshed_geometry.ipynb",
-         "element_to_tag": "01_rasterized_geometry.ipynb"}
+         "get_compiled_UnetModel": "03_train.ipynb",
+         "plot_example": "03_train.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
