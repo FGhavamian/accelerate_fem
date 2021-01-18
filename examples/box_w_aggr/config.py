@@ -13,6 +13,8 @@ resolution = (400, 400)
 field_names = ['plastic_strain'] # ['plastic_strain', 'solution']
 time_step = 40
 
+batch_size = 4
+
 # --- geometrical parameters
 circle_radius_range = (3, 7)
 n_circles = 10
