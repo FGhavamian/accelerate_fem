@@ -51,13 +51,17 @@ print('[INFO]   target shape', targets_test.shape)
 dataset_train = make_dataset(inputs_train, targets_train, config.batch_size, is_train=True)
 dataset_test = make_dataset(inputs_test, targets_test, config.batch_size)
 
-
 if args.continue_training == 1:
-    tf.keras.models.load_model(path_saved_model)
+    print('[INFO] loading model ...')
+    model = tf.keras.models.load_model(path_saved_model)
 else:
     print('[INFO] building model ...')
     input_shape = (None,) + inputs_train.shape[1:]
     model = get_compiled_UnetModel(args.kernel_sizes, args.filter_sizes, input_shape)
+    args.initial_epoch = 0
+
+
+tf.keras.backend.set_value(model.optimizer.lr, args.learning_rate)
 
 
 print(model.summary()) 
@@ -77,18 +81,14 @@ print(f'[INFO] model saved to {path_saved_model}.')
 path_metrics = os.path.join(path_saved_model, 'metrics.json')
 print(f'[INFO] saving metrics to {path_metrics} ...')
 
-metrics = {
-    'epochs': history.epoch,
-    'mse': history.history['loss'],
-    'mae': history.history['mae'],
-    'val_mse': history.history['val_loss'],
-    'val_mae': history.history['val_mae']
-}
+metrics = history.history
+metrics.update({'epochs': history.epoch})
 
-if os.path.exists(path_metrics):
-    print(f'[INFO] updating metrics at {path_metrics} ...')
-    metrics_old = load_json(path_metrics)
-    metrics = update_metrics(metrics, metrics_old)
+if args.continue_training == 1:
+    if os.path.exists(path_metrics):
+        print(f'[INFO] updating metrics at {path_metrics} ...')
+        metrics_old = load_json(path_metrics)
+        metrics = update_metrics(metrics, metrics_old)
 
 print(f'[INFO] saving metrics to {path_metrics} ...')
 save_json(path_metrics, metrics)

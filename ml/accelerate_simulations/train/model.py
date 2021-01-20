@@ -110,7 +110,7 @@ def get_compiled_UnetModel(kernel_sizes, filter_sizes, input_shape):
     model.build(input_shape)
 
     optimizer = tf.keras.optimizers.Adam()
-    model.compile(loss='mse', optimizer=optimizer, metrics=['mae'])
+    model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['mean_absolute_error'])
     return model
 
 # Cell
