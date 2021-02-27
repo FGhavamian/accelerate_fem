@@ -45,9 +45,9 @@ class AbstractGeometry:
     def get_geom_info(self):
         circles = self._generate_random_circles()
         circles = self._crop_to_final_box_size(circles)
-        box_coordinates = self._get_box_coordinates(self.final_box_size)
+        box_coord_dim = self._get_box_coord_dim()
 
-        return circles, box_coordinates
+        return circles, box_coord_dim
 
     def _compute_n_circles(self, circle_density):
         box_area = self.box_size[0] * self.box_size[1]
@@ -71,11 +71,11 @@ class AbstractGeometry:
 
         return circles.intersection(final_box)
 
-    def _get_box_coordinates(self, box_size):
-        return [[0, 0],
-                [box_size[0], 0],
-                [box_size[0], box_size[1]],
-                [0, box_size[1]]]
+    def _get_box_coord_dim(self):
+        a0, b0 = self.box_size
+        a, b = self.final_box_size
+
+        return [(a0-a)/2, (b0-b)/2, a, b]
 
     def _generate_random_circles(self):
         np.random.seed(self.seed)
