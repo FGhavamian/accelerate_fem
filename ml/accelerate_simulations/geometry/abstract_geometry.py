@@ -96,8 +96,8 @@ class AbstractGeometry:
 
             attempts += 1
             if attempts > 100 * self.n_circles:
-                print(f'''[WARNING] {attempts} attempts, reduce circle radius, increase box size, or decrease number of circles
-                returning {len(circles)} circles''')
+                # print(f'''[WARNING] {attempts} attempts, reduce circle radius, increase box size, or decrease number of circles
+                # returning {len(circles)} circles''')
                 return circles
 
             circle = generate_random_circle_in_box(
