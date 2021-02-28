@@ -1,11 +1,13 @@
 import os
 
+from joblib import Parallel, delayed
+
 from accelerate_simulations.geometry import AbstractGeometry, make_msh
 import config
 
 
 def make_directories_for(case_name):
-    path_case_dir = os.path.join(config.path_data_dir, case_name)
+    path_case_dir = os.path.join(config.path_data_raw, case_name)
 
     if os.path.exists(path_case_dir): 
         raise Exception(f'{path_case_dir} exists, remove it manually')
@@ -24,30 +26,34 @@ def make_directories_for(case_name):
     return paths
 
 
-for i, circle_location_seed in enumerate(config.circle_location_seed_list):
+def execute_one_case(circle_location_seed):
     case_name = str(circle_location_seed)
 
     paths = make_directories_for(case_name)
 
     abstract_geometry = AbstractGeometry(
-        config.n_circles,
-        config.circle_radius_range,
-        config.box_size,
-        config.gap,
-        circle_location_seed)
+        config.circle_density, 
+        config.circle_radius_range, 
+        config.box_size, 
+        config.gap, 
+        seed=circle_location_seed)
 
     abstract_geometry.save_at(paths['abstract_geometry'])
 
     make_msh(
         paths['mesh'], 
-        abstract_geometry, 
-        cl_coarse=config.cl_coarse, cl_fine=config.cl_fine, 
-        verbose=False)
+        abstract_geometry)
 
     fem_args = [
-        paths['mesh'], paths['solution_dir'], paths['plastic_strain_dir'],
-        str(config.b_1), str(config.y_1), str(config.b_2), str(config.y_2), 
-        str(config.n_timesteps)
+        paths['mesh'], 
+        paths['solution_dir'], 
+        paths['plastic_strain_dir'],
+        str(config.b_1), 
+        str(config.y_1), 
+        str(config.b_2), 
+        str(config.y_2), 
+        str(config.n_timesteps),
+        str(0)
     ]
     
     
@@ -56,3 +62,13 @@ for i, circle_location_seed in enumerate(config.circle_location_seed_list):
 
     print(command)
     os.system(command)
+
+
+par = Parallel(n_jobs=-1, verbose=51)
+delayed_func = delayed(execute_one_case)
+
+par(
+    delayed_func(circle_location_seed) 
+    for circle_location_seed in config.circle_location_seed_list
+
+)
