@@ -5,5 +5,14 @@ DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 project(fem)
 
-add_executable(fem main.cpp)
+add_executable(
+    fem 
+    main.cpp 
+    material_model.h
+    material_model.cpp 
+    model.h 
+    model.cpp 
+    point_history.h 
+    point_history.cpp 
+)
 DEAL_II_SETUP_TARGET(fem)
