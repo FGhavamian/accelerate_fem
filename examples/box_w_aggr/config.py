@@ -2,24 +2,21 @@ import os
 
 # --- fem model parameters
 n_timesteps = 50
-
-cl_coarse = 5.0
-cl_fine = 2.0
-circle_location_seed_list = range(1, 30)
+circle_location_seed_list = range(18)
 
 # --- nn parameters
-resolution = (400, 400)
+resolution = (128, 128)
 
 field_names = ['plastic_strain'] # ['plastic_strain', 'solution']
-time_step = 40
+time_step = 50
 
 batch_size = 4
 
 # --- geometrical parameters
-circle_radius_range = (3, 7)
-n_circles = 10
-box_size = (100, 100)
+box_size = (200, 200)
+circle_radius_range = (20, 50)
 gap = 10
+circle_density = 0.90
 
 # --- material parameters
 b_1 = 100.0

@@ -2,6 +2,9 @@ import os
 import glob
 import pickle
 import argparse
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 import numpy as np
 from tqdm import tqdm
@@ -12,7 +15,7 @@ import accelerate_simulations.preprocess as prep
 import config 
 
 
-def read_abstract_geometry(path_example):
+def load_abstract_geometry(path_example):
     path_geom = os.path.join(
         path_example,
         'abstract_geometry.pickle')
@@ -30,32 +33,24 @@ def get_paths_examples():
 
 
 def make_input_fields(path_example):
-    abstract_geometry = read_abstract_geometry(path_example)
+    abstract_geometry = load_abstract_geometry(path_example)
         
     rasterize = geom.GeometryRasterizer(resolution=config.resolution)
-    raster_array = rasterize(abstract_geometry)
+    x, y, raster_image = rasterize(abstract_geometry)
     
-    make_material_fields = prep.MaterialFieldMaker(
-        config.material_properties, 
-        geom.element_to_tag)
-
-    material_fields = make_material_fields(raster_array)
-
     make_geometric_fields = prep.GeometricFieldMaker(
         config.names_boundary, 
         geom.element_to_tag, 
-        scaling_factor=1)
+        scaling_factor=3)
 
-    geometric_fields = make_geometric_fields(raster_array)
-
-    input_fields = np.concatenate(
-        [geometric_fields, material_fields],
-        axis=-1)
+    input_fields = make_geometric_fields(raster_image, x, y)
 
     return input_fields
 
 
 def make_target_fields(path_example):
+    abstract_geometry = load_abstract_geometry(path_example)
+
     target_fields = []
     for field_name in config.field_names:
         path_vtu = os.path.join(
@@ -63,7 +58,7 @@ def make_target_fields(path_example):
 
         data_nodal = prep.read_vtu_file(path_vtu, field_name)
 
-        target_field = prep.interpolate(data_nodal, config.box_size, config.resolution)
+        target_field = prep.interpolate(data_nodal, config.resolution, abstract_geometry)
         target_fields.append(target_field)
     
     return np.concatenate(target_fields, axis=-1)
@@ -81,7 +76,7 @@ def save(input_fields, target_fields):
 
 
 def run_in_parallel(func, paths_examples):
-    par = Parallel(n_jobs=-1, verbose=11)
+    par = Parallel(n_jobs=-1)
     del_func = delayed(func)
     
     field_list = par(del_func(paths_example) for paths_example in paths_examples)
@@ -103,7 +98,7 @@ if __name__ == "__main__":
     print('[INFO] removing examples with unavailable data ...')
     print('[INFO] number of examples before:', len(paths_examples))
     paths_examples = remove_examples_with_unavailable_data(paths_examples)
-    print('[INFO] number of examples before:', len(paths_examples))
+    print('[INFO] number of examples after:', len(paths_examples))
     
     print('[INFO] making input fields ...')
     input_fields = run_in_parallel(make_input_fields, paths_examples)

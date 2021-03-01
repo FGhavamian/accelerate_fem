@@ -25,7 +25,11 @@ index = {"generate_random_circle_in_box": "00_abstract_geometry.ipynb",
          "UnetModel": "03_train.ipynb",
          "get_compiled_UnetModel": "03_train.ipynb",
          "plot_example": "03_train.ipynb",
-         "eucl_opt": "02_input_fields.ipynb"}
+         "eucl_opt": "02_input_fields.ipynb",
+         "add_domain_physical_tags": "01_meshed_geometry.ipynb",
+         "identify_rectangle_disk_tags": "01_meshed_geometry.ipynb",
+         "add_disks_rectangle": "01_meshed_geometry.ipynb",
+         "add_boundary_physical_tags": "01_meshed_geometry.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
