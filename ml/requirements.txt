@@ -1,0 +1,9 @@
+shapely
+joblib
+sklearn
+pandas
+numpy
+tensorflow
+geocube
+gmsh (https://pypi.org/project/gmsh/)
+nbdev
