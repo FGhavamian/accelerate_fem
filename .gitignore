@@ -3,6 +3,8 @@
 ml/models/*
 ml/outputs/*
 **data/*
+**outputs*
+**saved_model**
 fem/build/*
 examples/*/data/*
 **cmake-build-debug*
