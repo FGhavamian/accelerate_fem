@@ -29,14 +29,16 @@ index = {"generate_random_circle_in_box": "00_abstract_geometry.ipynb",
          "GoogleNetTransposedLayer": "03_train.ipynb",
          "UnetModel": "03_train.ipynb",
          "get_compiled_UnetModel": "03_train.ipynb",
-         "plot_example": "03_train.ipynb"}
+         "plot_example": "03_train.ipynb",
+         "Predictor": "03_predict.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
            "geometry/rasterized_geometry.py",
            "preprocess/input_fields.py",
            "preprocess/interpolate_target.py",
-           "train/model.py"]
+           "train/model.py",
+           "predict.py"]
 
 doc_url = "https://fghavamian.github.io/accelerate_simulations/"
 
