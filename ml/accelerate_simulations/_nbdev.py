@@ -30,7 +30,10 @@ index = {"generate_random_circle_in_box": "00_abstract_geometry.ipynb",
          "UnetModel": "03_train.ipynb",
          "get_compiled_UnetModel": "03_train.ipynb",
          "plot_example": "03_train.ipynb",
-         "Predictor": "03_predict.ipynb"}
+         "Predictor": "03_predict.ipynb",
+         "timeit": "03_predict.ipynb",
+         "post_process": "03_predict.ipynb",
+         "max_per_case": "03_predict.ipynb"}
 
 modules = ["geometry/abstract_geometry.py",
            "geometry/meshed_geometry.py",
