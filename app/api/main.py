@@ -4,6 +4,7 @@ import os
 
 import uvicorn
 from fastapi import FastAPI, Body
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,6 +28,20 @@ make_prediction(1, (20,50))
 app = FastAPI()
 
 
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 class Case(BaseModel):
     name: str
     n_samples: int
@@ -41,7 +56,7 @@ class PredictResponse(BaseModel):
 @app.put("/predict/", response_model=List[PredictResponse])
 async def predict(
     name: str,
-    cases: List[Case] = Body(...)
+    cases: List[Case]
 ):
     # prediction
     print('[INFO] making predictions ...')
