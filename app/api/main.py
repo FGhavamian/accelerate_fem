@@ -14,15 +14,15 @@ from accelerate_simulations.predict import Predictor, max_per_case
 
 print('[INFO] starting predictor ...')
 make_prediction = Predictor(
-    '../../examples/box_w_aggr/saved_model', 
-    circle_density=0.9,  
-    box_size=(200,200), 
+    '../../examples/box_w_aggr/saved_model',
+    circle_density=0.9,
+    box_size=(200, 200),
     gap=10,
-    resolution=(128,128),
-    names_boundary = ['circles_boundaries']
+    resolution=(128, 128),
+    names_boundary=['circles_boundaries']
 )
 print('[INFO] warming up the predictor ...')
-make_prediction(1, (20,50))
+make_prediction(1, (20, 50))
 
 
 app = FastAPI()
@@ -49,8 +49,9 @@ class Case(BaseModel):
 
 
 class PredictResponse(BaseModel):
+    name: str
     status: int
-    data: Optional[List[float]] = None 
+    data: Optional[List[float]] = None
 
 
 @app.put("/predict/", response_model=List[PredictResponse])
@@ -65,18 +66,21 @@ async def predict(
         print(f'[INFO] \tcase {case.name}')
         try:
             plastic_strains = make_prediction(
-                case.n_samples, 
+                case.n_samples,
                 case.radius_range
             )
 
             plastic_strains_max = max_per_case(plastic_strains)
 
             results.append(
-                PredictResponse(status=200, data=plastic_strains_max.tolist()))
+                PredictResponse(
+                    name=case.name,
+                    status=200, 
+                    data=plastic_strains_max.tolist()))
 
         except:
             results.append(
-                PredictResponse(status=400, data=None))
+                PredictResponse(name=case.name, status=400, data=None))
 
     return results
 
