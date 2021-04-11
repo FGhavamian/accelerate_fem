@@ -1,4 +1,5 @@
 import os
+import itertools
 
 from joblib import Parallel, delayed
 
@@ -26,14 +27,25 @@ def make_directories_for(case_name):
     return paths
 
 
-def execute_one_case(circle_location_seed):
-    case_name = str(circle_location_seed)
+def make_case_name(circle_location_seed, circle_radius_range):
+    case_name = 'radius_'
+    case_name += str(circle_radius_range[0])
+    case_name += '_'
+    case_name += str(circle_radius_range[1])
+    case_name += '_'
+    case_name += 'seed_'
+    case_name += str(circle_location_seed)
+    return case_name
+
+
+def execute_one_case(circle_location_seed, circle_radius_range):
+    case_name = make_case_name(circle_location_seed, circle_radius_range)
 
     paths = make_directories_for(case_name)
 
     abstract_geometry = AbstractGeometry(
         config.circle_density, 
-        config.circle_radius_range, 
+        circle_radius_range, 
         config.box_size, 
         config.gap, 
         seed=circle_location_seed)
@@ -64,11 +76,17 @@ def execute_one_case(circle_location_seed):
     os.system(command)
 
 
-par = Parallel(n_jobs=-1, verbose=51)
-delayed_func = delayed(execute_one_case)
+if __name__ == '__main__':
+    combinations = itertools.product(
+        config.circle_location_seeds, 
+        config.circle_radius_range)
 
-par(
-    delayed_func(circle_location_seed) 
-    for circle_location_seed in config.circle_location_seed_list
+    execute_one_case(*list(combinations)[0])
 
-)
+    # par = Parallel(n_jobs=-1, verbose=51)
+    # delayed_func = delayed(execute_one_case)
+
+    # par(
+    #     delayed_func(loc, rad) 
+    #     for loc, rad in combinations
+    # )

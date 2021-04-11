@@ -1,32 +1,38 @@
 import os
 
-# --- fem model parameters
-n_timesteps = 50
-circle_location_seed_list = range(18)
 
-# --- nn parameters
+# data collection 
+# --- varying geometrical parameters
+# circle_location_seeds = range(10)
+# circle_radius_range = [(5*(1+i), 5*(2+i)) for i in range(10)]
+
+circle_location_seeds = [3]
+circle_radius_range = [[15, 20]]
+
+# --- static geometrical parameters
 resolution = (128, 128)
-
-field_names = ['plastic_strain'] # ['plastic_strain', 'solution']
-time_step = 50
-
-batch_size = 4
-
-# --- geometrical parameters
 box_size = (200, 200)
-circle_radius_range = (20, 50)
 gap = 10
 circle_density = 0.90
 
-# --- material parameters
+# --- static material parameters
 b_1 = 100.0
 y_1 = 10.0
 b_2 = 100.0
 y_2 = 1.0
 
-# --- parameters from input fields
-names_boundary = ['circles_boundaries']
+# --- meta data
+n_timesteps = 50
+field_names = ['plastic_strain'] # ['plastic_strain', 'solution']
 
+time_step = 50
+
+# --- nn parameters
+batch_size = 4
+
+
+# preprocessing parameters
+names_boundary = ['circles_boundaries']
 material_properties = {
     "y": {
         "circles": y_1,
