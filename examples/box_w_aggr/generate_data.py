@@ -17,12 +17,14 @@ def make_directories_for(case_name):
         'mesh': os.path.join(path_case_dir, 'mesh.msh'),
         'abstract_geometry': os.path.join(path_case_dir, 'abstract_geometry.pickle'), 
         'solution_dir': os.path.join(path_case_dir, 'solution/'), 
-        'plastic_strain_dir': os.path.join(path_case_dir, 'plastic_strain/')
+        'plastic_strain_dir': os.path.join(path_case_dir, 'plastic_strain/'),
+        'vm_stress_dir': os.path.join(path_case_dir, 'vm_stress/')
     }
 
     os.makedirs(path_case_dir)
     os.makedirs(paths['solution_dir'])
     os.makedirs(paths['plastic_strain_dir'])
+    os.makedirs(paths['vm_stress_dir'])
 
     return paths
 
@@ -60,6 +62,7 @@ def execute_one_case(circle_location_seed, circle_radius_range):
         paths['mesh'], 
         paths['solution_dir'], 
         paths['plastic_strain_dir'],
+        paths['vm_stress_dir'],
         str(config.b_1), 
         str(config.y_1), 
         str(config.b_2), 

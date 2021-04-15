@@ -16,7 +16,8 @@ SymmetricTensor<2, 2> PointHistory::get_stress_old()
     return stress_old;
 }
 
-double PointHistory::get_strain_plastic_cum() const {
+double PointHistory::get_strain_plastic_cum() const 
+{
     return strain_plastic_cum_old;
 }
 

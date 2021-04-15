@@ -295,6 +295,11 @@ void Model::output_results() {
             local_plastic_strain_values_at_qpoints(quadrature_formula.size()),
             local_plastic_strain_fe_values(history_fe.dofs_per_cell);
 
+    Vector<double>
+            vm_stress_field(history_dof_handler.n_dofs()),
+            local_vm_stress_values_at_qpoints(quadrature_formula.size()),
+            local_vm_stress_fe_values(history_fe.dofs_per_cell);
+
     FullMatrix<double> qpoint_to_dof_matrix(history_fe.dofs_per_cell, quadrature_formula.size());
 
     FETools::compute_projection_from_quadrature_points_matrix(
@@ -307,11 +312,23 @@ void Model::output_results() {
         const std::vector<std::shared_ptr<PointHistory>> history_vec = quadrature_point_history.get_data(cell);
 
         for (unsigned int q = 0; q < quadrature_formula.size(); ++q)
-            local_plastic_strain_values_at_qpoints(q) = history_vec[q]->get_strain_plastic_cum();
+        {
+            SymmetricTensor<2, 2> stress = history_vec[q]->get_stress_old();
+            double von_Mises_stress = std::sqrt(
+                stress[0][0] * stress[0][0] + 
+                stress[1][1] * stress[1][1] - 
+                stress[0][0] * stress[1][1] + 
+                3 * stress[0][1] * stress[0][1]);
 
+            local_vm_stress_values_at_qpoints(q) = von_Mises_stress;
+
+            local_plastic_strain_values_at_qpoints(q) = history_vec[q]->get_strain_plastic_cum();
+        }
         qpoint_to_dof_matrix.vmult(local_plastic_strain_fe_values, local_plastic_strain_values_at_qpoints);
+        qpoint_to_dof_matrix.vmult(local_vm_stress_fe_values, local_vm_stress_values_at_qpoints);
 
         cell->set_dof_values(local_plastic_strain_fe_values, plastic_strain_field);
+        cell->set_dof_values(local_vm_stress_fe_values, vm_stress_field);
     }
 
     FE_Q<2>       fe_1 (1);
@@ -322,12 +339,17 @@ void Model::output_results() {
             plastic_strain_on_vertices (dof_handler_1.n_dofs()),
             counter_on_vertices (dof_handler_1.n_dofs());
 
+    Vector<double>
+            vm_stress_on_vertices (dof_handler_1.n_dofs());
+
     plastic_strain_on_vertices = 0;
     counter_on_vertices = 0;
+    vm_stress_on_vertices = 0;
 
     for (const auto &cell : dof_handler_1.active_cell_iterators())
     {
         cell->get_dof_values (plastic_strain_field, local_plastic_strain_fe_values);
+        cell->get_dof_values (vm_stress_field, local_vm_stress_fe_values);
 
         for  (unsigned int v = 0; v < GeometryInfo<2>::vertices_per_cell; ++v)
         {
@@ -335,11 +357,15 @@ void Model::output_results() {
 
             counter_on_vertices (dof_1_vertex) += 1;
             plastic_strain_on_vertices (dof_1_vertex) += local_plastic_strain_fe_values (v);
+            vm_stress_on_vertices (dof_1_vertex) += local_vm_stress_fe_values (v);
         }
     }
 
     for (unsigned int id=0; id<dof_handler_1.n_dofs(); ++id)
+    {
         plastic_strain_on_vertices(id) /= counter_on_vertices(id);
+        vm_stress_on_vertices(id) /= counter_on_vertices(id);
+    }
 
     DataOut<2> data_out_p;
     data_out_p.attach_dof_handler(dof_handler_1);
@@ -352,7 +378,21 @@ void Model::output_results() {
                             + ".vtu";
     std::ofstream output_p(path);
     data_out_p.write_vtu(output_p);
+
+
+    DataOut<2> data_out_s;
+    data_out_s.attach_dof_handler(dof_handler_1);
+    data_out_s.add_data_vector(vm_stress_on_vertices, "vm_stress");
+    data_out_s.build_patches();
+
+    std::string path_vm = path_config["output_vm_stress"]
+                            + "vm_stress_"
+                            + std::to_string(timestep_no)
+                            + ".vtu";
+    std::ofstream out_s(path_vm);
+    data_out_s.write_vtu(out_s);
 }
+
 
 void Model::setup_system()
 {
