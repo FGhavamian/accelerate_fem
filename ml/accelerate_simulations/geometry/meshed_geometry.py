@@ -137,7 +137,7 @@ def make_msh(output_path, abstract_geometry):
     gmsh.option.setNumber("Mesh.MeshSizeMin", (dx+dy)/100)
     gmsh.option.setNumber("Mesh.MeshSizeMax", (dx+dy)/100)
     model.mesh.generate(dim=2)
-    gmsh.model.mesh.refine()
+    # gmsh.model.mesh.refine()
     gmsh.write(output_path)
 
     gmsh.finalize()
