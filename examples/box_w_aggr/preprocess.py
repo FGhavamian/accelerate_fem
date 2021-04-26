@@ -2,6 +2,7 @@ import os
 import glob
 import pickle
 import argparse
+import re 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -64,15 +65,17 @@ def make_target_fields(path_example):
     return np.concatenate(target_fields, axis=-1)
 
 
-def save(input_fields, target_fields):
+def save(input_fields, target_fields, class_names):
     if not os.path.exists(config.path_data_processed): 
         os.mkdir(config.path_data_processed)
 
     path_input = os.path.join(config.path_data_processed, 'input.npy')
     path_target = os.path.join(config.path_data_processed, 'target.npy')
+    path_classes = os.path.join(config.path_data_processed, 'class_names.npy')
 
     np.save(path_input, input_fields)
     np.save(path_target, target_fields)
+    np.save(path_classes, class_names)
 
 
 def run_in_parallel(func, paths_examples):
@@ -92,6 +95,16 @@ def remove_examples_with_unavailable_data(paths_examples):
     return [p for p in paths_examples if os.path.exists(full_path(p))]
 
 
+def extract_classes(paths_examples):
+    re_splitter = re.compile('(radius_\d+_\d+)')
+    class_names = []
+    for path in paths_examples:
+        class_name = path.split(os.path.sep)[-1]
+        class_name = re_splitter.split(class_name)[1]
+        class_names.append(class_name)
+    return class_names
+
+
 if __name__ == "__main__":
     paths_examples = get_paths_examples()
     
@@ -99,6 +112,8 @@ if __name__ == "__main__":
     print('[INFO] number of examples before:', len(paths_examples))
     paths_examples = remove_examples_with_unavailable_data(paths_examples)
     print('[INFO] number of examples after:', len(paths_examples))
+
+    class_names = extract_classes(paths_examples)
     
     print('[INFO] making input fields ...')
     input_fields = run_in_parallel(make_input_fields, paths_examples)
@@ -109,4 +124,4 @@ if __name__ == "__main__":
     print('[INFO] input_fields shape:', target_fields.shape)
 
     print('[INFO] saving fields ...')
-    save(input_fields, target_fields)
+    save(input_fields, target_fields, class_names)
